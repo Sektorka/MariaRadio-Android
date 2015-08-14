@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="transparent" type="color">#00000000</item>
+    <item name="currentProgram" type="color">#005E2F</item>
+    <item name="defaultBG" type="color">#212121</item>
+    <item name="textColor" type="color">#FEFEFE</item>
+</resources>

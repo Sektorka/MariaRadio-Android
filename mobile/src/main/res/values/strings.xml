@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Mária Rádió</string>
+
+    <string name="title_radio">Rádió</string>
+    <string name="title_programs">Műsorok</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
