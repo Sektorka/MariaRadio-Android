@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 23
     buildToolsVersion "22.0.1"
     defaultConfig {
         applicationId "eu.gyurasz.mariaradio"
@@ -23,9 +23,9 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     wearApp project(':wear')
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.google.android.gms:play-services:7.8.0'
-    compile 'com.android.support:support-v4:22.2.1'
     compile files('libs/jsoup-1.8.3.jar')
     compile files('libs/commons-lang3-3.4.jar')
+    compile 'com.android.support:appcompat-v7:23.0.0'
+    compile 'com.google.android.gms:play-services:7.8.0'
+    compile 'com.android.support:support-v4:23.0.0'
 }

@@ -16,9 +16,11 @@ import java.util.List;
 import eu.gyurasz.mariaradio.R;
 
 public class ProgramAdapter extends ArrayAdapter<Program> {
+    protected int resource;
 
     public ProgramAdapter(Context context, int resource, List<Program> programs) {
         super(context, resource, programs);
+        this.resource = resource;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class ProgramAdapter extends ArrayAdapter<Program> {
         if (convertView == null) {
             holder = new ProgramHolder();
             row = ((LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                    .inflate(R.layout.program_item, parent, false);
+                    .inflate(resource, parent, false);
 
             holder.tvTitle = (TextView)row.findViewById(R.id.tvTitle);
             holder.tvDesc = (TextView)row.findViewById(R.id.tvDesc);

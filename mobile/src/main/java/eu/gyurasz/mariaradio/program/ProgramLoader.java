@@ -14,17 +14,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import eu.gyurasz.mariaradio.Consts;
+import eu.gyurasz.mariaradio.ILoaded;
 
-public class ProgramLoader extends AsyncTask<ProgramLoaded, Void, List<Program>> {
-    List<Program> mPrograms;
-    private ProgramLoaded[] mCallbacks;
+public class ProgramLoader extends AsyncTask<ILoaded<Program>, Void, List<Program>> {
+    private List<Program> mPrograms;
+    private ILoaded<Program>[] mCallbacks;
 
     public ProgramLoader(List<Program> programs){
         mPrograms = programs;
     }
 
     @Override
-    protected List<Program> doInBackground(ProgramLoaded... callbacks) {
+    protected List<Program> doInBackground(ILoaded<Program>... callbacks) {
         mCallbacks = callbacks;
 
         try {
@@ -34,6 +35,7 @@ public class ProgramLoader extends AsyncTask<ProgramLoaded, Void, List<Program>>
             final String br = "|||";
             boolean gotCurrent = false;
 
+            mPrograms.clear();
 
             Elements progDates = doc.getElementsByClass("mlistaido");
             Elements progNamesTitles = doc.getElementsByClass("mlistacim");
@@ -87,7 +89,7 @@ public class ProgramLoader extends AsyncTask<ProgramLoaded, Void, List<Program>>
 
     @Override
     protected void onPostExecute(List<Program> programs) {
-        for(ProgramLoaded programLoaded: mCallbacks){
+        for(ILoaded<Program> programLoaded: mCallbacks){
             programLoaded.Loaded(programs);
         }
     }
