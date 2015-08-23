@@ -4,5 +4,6 @@
     <string name="title_radio">Rádió</string>
     <string name="title_programs">Műsorok</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Beállítások</string>
+    <string name="loading_datas">Adatok betöltése...</string>
 </resources>

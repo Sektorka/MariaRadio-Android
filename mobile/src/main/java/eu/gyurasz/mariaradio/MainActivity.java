@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
@@ -13,20 +14,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import eu.gyurasz.mariaradio.mountpoint.MountPoint;
-import eu.gyurasz.mariaradio.mountpoint.MountPointLoaded;
 import eu.gyurasz.mariaradio.mountpoint.MountPointLoader;
 import eu.gyurasz.mariaradio.program.Program;
 import eu.gyurasz.mariaradio.program.ProgramFragment;
-import eu.gyurasz.mariaradio.program.ProgramLoaded;
 import eu.gyurasz.mariaradio.program.ProgramLoader;
 
 public class MainActivity extends AppCompatActivity implements ActionBar.TabListener, ILoaded {
@@ -34,11 +28,26 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     private ViewPager mViewPager;
     private ProgramFragment mProgramFragment;
     private MainFragment mMainFragment;
+    private List<MountPoint> mMountPoints;
+    private List<Program> mPrograms;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mMountPoints = new ArrayList<MountPoint>();
+        mPrograms = new ArrayList<Program>();
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle(getString(R.string.app_name));
+        mProgressDialog.setMessage(getString(R.string.loading_datas));
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setProgressStyle(mProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setProgress(0);
+        mProgressDialog.setMax(2);
+        mProgressDialog.show();
 
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -61,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             }
         });
 
+
+
+
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
             actionBar.addTab(
@@ -70,6 +82,17 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         }
     }
 
+    public List<MountPoint> getMountPoints() {
+        return mMountPoints;
+    }
+
+    public List<Program> getPrograms() {
+        return mPrograms;
+    }
+
+    public ProgramFragment getProgramFragment() {
+        return mProgramFragment;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -108,13 +131,23 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
             if (firstItem instanceof Program) {
                 mProgramFragment.programsUpdated();
+                incrementProgress();
             }
             else if(firstItem instanceof MountPoint){
                 mMainFragment.mountPointsUpdated();
+                incrementProgress();
             }
         }
     }
 
+    private void incrementProgress(){
+        mProgressDialog.setProgress(mProgressDialog.getProgress() + 1);
+
+        if(mProgressDialog.getProgress() >= mProgressDialog.getMax()){
+            mProgressDialog.dismiss();
+            mMainFragment.updateStatus();
+        }
+    }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -127,12 +160,12 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             switch (position){
                 case 0:
                     mMainFragment = new MainFragment();
-                    MountPointLoader mpl = new MountPointLoader(mMainFragment.getmMountPoints());
+                    MountPointLoader mpl = new MountPointLoader(mMountPoints);
                     mpl.execute(MainActivity.this);
                     return mMainFragment;
                 case 1:
                     mProgramFragment = new ProgramFragment();
-                    ProgramLoader pl = new ProgramLoader(mProgramFragment.getPrograms());
+                    ProgramLoader pl = new ProgramLoader(mPrograms);
                     pl.execute(MainActivity.this);
                     return mProgramFragment;
             }
