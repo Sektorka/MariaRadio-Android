@@ -61,20 +61,21 @@
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:id="@+id/imageView"
+            android:enabled="false"
+            android:id="@+id/ivPlay"
             android:src="@drawable/play" />
 
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:id="@+id/imageView2"
+            android:id="@+id/ivMute"
             android:src="@drawable/sound_on"
             android:layout_marginLeft="15dp" />
 
         <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/seekBar"
+            android:id="@+id/sbVolume"
             android:layout_weight="1"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="15dp" />

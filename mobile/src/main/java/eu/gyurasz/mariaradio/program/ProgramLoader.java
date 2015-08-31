@@ -2,6 +2,7 @@ package eu.gyurasz.mariaradio.program;
 
 import android.os.AsyncTask;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,22 +17,27 @@ import java.util.List;
 import eu.gyurasz.mariaradio.Consts;
 import eu.gyurasz.mariaradio.ILoaded;
 
-public class ProgramLoader extends AsyncTask<ILoaded<Program>, Void, List<Program>> {
+public class ProgramLoader extends AsyncTask<ILoaded, Exception, List<Program>> {
     private List<Program> mPrograms;
-    private ILoaded<Program>[] mCallbacks;
+    private ILoaded[] mCallbacks;
 
     public ProgramLoader(List<Program> programs){
         mPrograms = programs;
     }
 
     @Override
-    protected List<Program> doInBackground(ILoaded<Program>... callbacks) {
+    protected List<Program> doInBackground(ILoaded... callbacks) {
         mCallbacks = callbacks;
 
         try {
             Date dateTime = new Date();
             Date now = new Date();
-            Document doc = Jsoup.connect(String.format(Consts.PROGRAMS_URL, new SimpleDateFormat("yyyyMMdd").format(dateTime)) ).get();
+
+            Connection conn = Jsoup.connect(String.format(Consts.PROGRAMS_URL, new SimpleDateFormat("yyyyMMdd").format(dateTime)));
+            conn.timeout(Consts.TIMEOUT);
+            //conn.userAgent()
+
+            Document doc = conn.get();
             final String br = "|||";
             boolean gotCurrent = false;
 
@@ -40,7 +46,7 @@ public class ProgramLoader extends AsyncTask<ILoaded<Program>, Void, List<Progra
             Elements progDates = doc.getElementsByClass("mlistaido");
             Elements progNamesTitles = doc.getElementsByClass("mlistacim");
 
-            for(int i = 0; i < progDates.size() && i < progNamesTitles.size(); i++){
+            for(int i = 0; i < progDates.size() && i < progNamesTitles.size() && !isCancelled(); i++){
                 String time = progDates.get(i).text();
                 String txt = progNamesTitles.get(i).html();
 
@@ -74,23 +80,37 @@ public class ProgramLoader extends AsyncTask<ILoaded<Program>, Void, List<Progra
             }
 
 
-            for (Iterator<Program> iter = mPrograms.listIterator(); iter.hasNext(); ) {
+            for (Iterator<Program> iter = mPrograms.listIterator(); iter.hasNext() && !isCancelled(); ) {
                 Program program = iter.next();
                 if(now.compareTo(program.getDateTime()) > 0 && !program.isCurrent()){
                     iter.remove();
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            if(isCancelled()){
+                mPrograms.clear();
+            }
+
+        } catch (Exception e) {
+            publishProgress(e);
         }
 
         return mPrograms;
     }
 
     @Override
+    protected void onProgressUpdate(Exception... ex) {
+        for(Exception e: ex) {
+            for (ILoaded mountPointILoaded : mCallbacks) {
+                mountPointILoaded.OnException(e);
+            }
+        }
+    }
+
+    @Override
     protected void onPostExecute(List<Program> programs) {
-        for(ILoaded<Program> programLoaded: mCallbacks){
-            programLoaded.Loaded(programs);
+        for(ILoaded programLoaded: mCallbacks){
+            programLoaded.<Program>Loaded(programs);
         }
     }
 }

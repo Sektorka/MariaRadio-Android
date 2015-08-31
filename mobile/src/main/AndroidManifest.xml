@@ -27,6 +27,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="eu.gyurasz.mariaradio.MainActivity" />
         </activity>
+
+        <service
+            android:name=".RadioPlayer"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

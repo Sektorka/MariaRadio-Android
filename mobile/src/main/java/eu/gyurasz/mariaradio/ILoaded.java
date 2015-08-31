@@ -2,6 +2,6 @@ package eu.gyurasz.mariaradio;
 
 import java.util.List;
 
-public interface ILoaded<T> {
-    public void Loaded(List<T> dataList);
+public interface ILoaded extends IException {
+    public <T> void Loaded(List<T> dataList);
 }
